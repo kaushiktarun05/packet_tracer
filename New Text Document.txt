@@ -1,0 +1,105 @@
+Crate a Packet Tracer Topology Lab
+By Tarun Kaushik
+Github: kaushiktarun2003
+
+
+Our first step is to open the packet tracer and need to create a simple lab. For this topology we will use only one switch and a PC.  Simply drag these two items on dashboard. Now we will connect them with straight through connection.
+
+configuration of SSH on Packet Tracer
+
+
+
+
+
+Basic IP Setting for connectivity
+The next step is assign the suitable IP setting to these devices. For keeping it simple and making basic connectivity we will assign just two IP address to these device. We will assign the IP address to PC. For this will open the PC setting and then IP configuration. Here we will assign an IP address to host, in our case we are going to assign it 192.168.1.1 with the default gateway. For default gateway we will assign the IP address 192.168.1.10. We assign the second IP address to our Vlan1 interface on switch. And its IP address will be the gateway of host that is 192.168.1.10. For this we will use the basic commands.
+
+
+
+
+
+Switch> enable
+
+Switch# config t
+
+Switch(config)#interface vlan 1
+
+Switch (config-if)# ip address 192.168.1.10 255.255.255.0
+
+Switch (config -if)#no shut
+
+ 
+
+Once you done with basic IP setting, you can verify the connectivity by pinging the interface vlan1 IP from host.
+
+Set host-name and domain-name on Switch
+For SSh configurations you need to configure a host-name and domain-name for your switch you can do this with these simple commands.
+
+Switch # config t
+
+Switch (config)#hostname SW1
+
+SW1 ( config)#ip domain-name w7cloud.com
+
+ Set console and enable password for SSH login
+For SSH access it is required that you must configure the console and enable password on your cisco switch. You can set these two passwords with following commands.
+
+SW1 ( config)#line console 0
+
+SW1(config-line)#password cisco
+
+SW1(config -line)#logging synchronous
+
+SW1(config- line)#login local
+
+SW1 (config- line)#exit
+
+ SW1 # enable secret cisco
+
+ Generate the RSA Keys
+Your Cisco switch must have RSA keys that for the SSH process. You can generate the RSA keys with following command:
+
+
+
+SW1 ( config)# crypto key generate rsa
+
+How many bits in the modulus [512]: 1024
+
+ % Generating 1024 bit RSA keys, keys will be non-exportable…[OK]
+
+ Set the size of key to 1024 bits.
+
+If your Cisco Switch is running an older version of Cisco IOS image, then it is extremely recommended that you upgrade to latest Cisco IOS.
+
+Setup the Line VTY configurations
+For the configuration of SSH on cisco switch you need the following line vty configurations, and input transport is required to set to SSH. Set the login-to-local, & password to 7.
+
+sw1 ( config)#line vty 0 4
+
+sw1 ( config-line)#transport input ssh
+
+sw1( config -line)#login local
+
+sw1(config- line)#password 7
+
+sw1(config- line ) #exit
+
+Create the username password for SSH access from PC
+If you do not have a username for SSH access you need to create a username. You can do it with this simple command:
+
+ Sw1# config t
+
+sw1 (config ) # username w7cloud password cisco
+
+ Make sure the password encryption services is enabled on your switch, this service will encrypt your password, & when you do “sh run”, you’ll see only the encrypted password, not clear text password.
+
+SW1# service password-encryption
+
+Verify SSH access from Host
+Once you done with the above configurations you can test all these configuration by creating a SSH connection from Host. You do it the command ssh –l <username> <IP address>. Open the host command prompt and use the command
+
+ C:\>ssh -l  waqas 192.168.1.10
+
+ It will ask for password, provide the password that you created with this username in previous steps. Then it asked for console password and then you need to provide the enable password. Now you are in your Cisco switch. You can perform switch configurations from your host.
+
+From the switch, if you use the command ‘sh ip ssh’, it will also confirm that SSH is enabled on this cisco swith.
